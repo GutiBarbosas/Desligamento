@@ -1,0 +1,180 @@
+/* Dashboard de Desligamentos — tema escuro (tokens copiados do dashboard atual; projeto independente). */
+:root {
+  --bg:#0b0f19; --panel-bg:#141a29; --panel-soft:#111623; --border:#232b3d; --border-soft:#1b2233;
+  --text:#e7eaf3; --text-dim:#a3abc2; --text-faint:#6b7690;
+  --accent:#4c7cf0; --green:#2fbf83; --red:#f0576a; --amber:#e8a33d; --grey:#8a93aa;
+  --radius-md:12px; --radius-sm:8px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.5 var(--font); -webkit-font-smoothing:antialiased; }
+h1, h2, p { margin:0; }
+
+.page { max-width:1280px; margin:0 auto; padding:32px 28px 48px; }
+
+/* Cabeçalho */
+.header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px 24px; flex-wrap:wrap; padding-bottom:24px; margin-bottom:24px; border-bottom:1px solid var(--border-soft); }
+.header h1 { font-size:28px; line-height:1.2; font-weight:700; letter-spacing:-.01em; }
+.subtitle { margin-top:4px; color:var(--text-dim); font-size:14px; }
+.source { display:inline-flex; align-items:center; gap:8px; max-width:100%; font-size:12px; color:var(--text-faint); border:1px solid var(--border); border-radius:999px; padding:5px 12px; }
+.source-dot { flex:none; width:6px; height:6px; border-radius:50%; background:var(--text-faint); }
+.source.ok .source-dot { background:var(--green); }
+.source.erro { color:var(--red); border-color:var(--red); }
+.source.erro .source-dot { background:var(--red); }
+
+/* Cards principais */
+.cards { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:16px; margin-bottom:24px; }
+.card { background:var(--panel-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 20px 20px; min-width:0; }
+.card-total { border-top:2px solid var(--accent); }
+.card-label { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:500; color:var(--text-dim); }
+.card-value { margin-top:10px; font-size:40px; line-height:1.1; font-weight:700; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+.dot { flex:none; width:8px; height:8px; border-radius:50%; }
+.dot-green { background:var(--green); } .dot-amber { background:var(--amber); } .dot-grey { background:var(--grey); }
+
+/* Espaços reservados (sem conteúdo) */
+.slot { background:var(--panel-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px 20px 20px; margin-bottom:24px; min-width:0; }
+.slot-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px; margin-bottom:24px; }
+.slot-grid .slot { margin-bottom:0; }
+.slot-title { font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); margin-bottom:12px; }
+.slot-body { border:1px dashed var(--border); border-radius:var(--radius-sm); background:var(--panel-soft); }
+.slot-body-sm { min-height:72px; } .slot-body-md { min-height:280px; } .slot-body-lg { min-height:320px; }
+
+/* Filtros (Etapa 4) */
+.filters-grid { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:14px 16px; }
+.field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.field label { font-size:12px; color:var(--text-dim); }
+.field input, .field select { width:100%; height:38px; padding:0 10px; font:inherit; color:var(--text); background:var(--panel-soft); border:1px solid var(--border); border-radius:var(--radius-sm); color-scheme:dark; }
+.field input::placeholder { color:var(--text-faint); }
+.field input:focus-visible, .field select:focus-visible, .btn-ghost:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+.field input:disabled, .field select:disabled, .btn-ghost:disabled { opacity:.5; cursor:not-allowed; }
+.filters-foot { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--border-soft); }
+.result-count { font-size:13px; color:var(--text-dim); font-variant-numeric:tabular-nums; }
+.btn-ghost { height:34px; padding:0 14px; font:inherit; font-size:13px; color:var(--text-dim); background:transparent; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; }
+.btn-ghost:hover:not(:disabled) { color:var(--text); border-color:var(--text-faint); }
+.empty-msg { margin-top:12px; padding:10px 12px; font-size:13px; color:var(--amber); background:rgba(232,163,61,.08); border:1px solid rgba(232,163,61,.25); border-radius:var(--radius-sm); }
+
+/* Tabela (Etapa 5) */
+.table-wrap { overflow-x:auto; border:1px solid var(--border-soft); border-radius:var(--radius-sm); }
+.tbl { width:100%; min-width:960px; border-collapse:collapse; font-size:13px; }
+.tbl th { padding:10px 12px; text-align:left; vertical-align:bottom; font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--text-faint); background:var(--panel-soft); border-bottom:1px solid var(--border); }
+.tbl td { padding:10px 12px; vertical-align:middle; border-bottom:1px solid var(--border-soft); }
+.tbl tbody tr:last-child td { border-bottom:0; }
+.tbl tbody tr:hover td { background:var(--panel-soft); }
+.col-nome { min-width:200px; font-weight:500; }
+.col-num { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.col-nowrap { white-space:nowrap; }
+.sort-btn { padding:0; font:inherit; letter-spacing:inherit; text-transform:inherit; text-align:left; color:inherit; background:none; border:0; cursor:pointer; }
+.sort-btn::after { content:"\00a0\2195"; opacity:.4; }
+.sort-btn:hover { color:var(--text); }
+.sort-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+th[aria-sort="ascending"] .sort-btn, th[aria-sort="descending"] .sort-btn { color:var(--text); }
+th[aria-sort="ascending"] .sort-btn::after { content:"\00a0\25B2"; opacity:1; }
+th[aria-sort="descending"] .sort-btn::after { content:"\00a0\25BC"; opacity:1; }
+.badge { display:inline-block; padding:2px 9px; font-size:12px; font-weight:500; line-height:1.5; border:1px solid; border-radius:999px; white-space:nowrap; }
+.badge-green { color:var(--green); background:rgba(47,191,131,.10); border-color:rgba(47,191,131,.25); }
+.badge-amber { color:var(--amber); background:rgba(232,163,61,.10); border-color:rgba(232,163,61,.25); }
+.badge-grey { color:var(--grey); background:rgba(138,147,170,.10); border-color:rgba(138,147,170,.25); }
+.table-empty { padding:56px 16px; text-align:center; font-size:14px; color:var(--text-dim); background:var(--panel-soft); border:1px solid var(--border-soft); border-radius:var(--radius-sm); }
+.table-foot { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:14px; }
+.pager { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.table-foot[hidden], .pager[hidden] { display:none; }
+.pager-btn { min-width:34px; height:34px; padding:0 10px; font:inherit; font-size:13px; font-variant-numeric:tabular-nums; color:var(--text-dim); background:transparent; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; }
+.pager-btn:hover:not(:disabled):not(.is-active) { color:var(--text); border-color:var(--text-faint); }
+.pager-btn.is-active { color:var(--text); background:rgba(76,124,240,.15); border-color:var(--accent); cursor:default; }
+.pager-btn:disabled { opacity:.4; cursor:not-allowed; }
+.pager-btn:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+.pager-gap { padding:0 4px; color:var(--text-faint); }
+
+/* Gráficos (Etapa 6) */
+.chart-box { position:relative; height:300px; min-width:0; }
+.chart-box[hidden], .chart-empty[hidden] { display:none; }
+.chart-empty { display:flex; align-items:center; justify-content:center; height:300px; padding:0 16px; text-align:center; font-size:14px; color:var(--text-dim); background:var(--panel-soft); border:1px solid var(--border-soft); border-radius:var(--radius-sm); }
+
+/* Exportação Excel/CSV (Etapa 8) */
+.export-bar { display:flex; align-items:center; justify-content:space-between; gap:10px 16px; flex-wrap:wrap; margin-bottom:12px; }
+.export-actions { display:flex; align-items:center; gap:8px; }
+.export-label { font-size:12px; color:var(--text-faint); }
+.export-actions .btn-ghost { height:30px; padding:0 12px; font-size:12px; }
+.export-erro { flex-basis:100%; font-size:12px; color:var(--red); }
+.export-erro[hidden] { display:none; }
+
+/* Detalhes do desligamento (Etapa 7) */
+.nome-btn { padding:0; font:inherit; font-weight:inherit; text-align:left; color:inherit; background:none; border:0; border-bottom:1px dashed transparent; cursor:pointer; }
+.nome-btn:hover { color:var(--accent); border-bottom-color:var(--accent); }
+.nome-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+.det-overlay { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:16px; overflow-y:auto; overscroll-behavior:contain; background:rgba(5,8,15,.72); }
+.det-overlay[hidden] { display:none; }
+.det-dialog { display:flex; flex-direction:column; width:100%; max-width:520px; max-height:100%; overflow:hidden; margin:auto; padding:18px 20px 20px; background:var(--panel-bg); border:1px solid var(--border); border-radius:var(--radius-md); box-shadow:0 20px 50px rgba(0,0,0,.5); }
+.det-head, .det-foot { flex:none; }
+.det-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border-soft); }
+.det-title { font-size:16px; font-weight:600; line-height:1.3; }
+.det-x { flex:none; width:32px; height:32px; margin:-4px -6px 0 0; padding:0; font:inherit; font-size:22px; line-height:1; color:var(--text-dim); background:transparent; border:0; border-radius:var(--radius-sm); cursor:pointer; }
+.det-x:hover { color:var(--text); background:var(--panel-soft); }
+.det-x:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+.det-lista { display:grid; grid-template-columns:minmax(0,150px) minmax(0,1fr); gap:10px 16px; align-content:start; margin:0; min-height:0; overflow-y:auto; overscroll-behavior:contain; }
+.det-lista dt { font-size:12px; color:var(--text-faint); padding-top:2px; }
+.det-valor { font-size:14px; overflow-wrap:anywhere; }
+.det-foot { display:flex; justify-content:flex-end; margin-top:18px; padding-top:14px; border-top:1px solid var(--border-soft); }
+@media (max-width:480px) {
+  .det-overlay { padding:10px; }
+  .det-dialog { padding:16px 14px 16px; }
+  .det-lista { grid-template-columns:minmax(0,1fr); gap:2px 0; }
+  .det-lista dd { margin-bottom:10px; }
+}
+
+/* Diagnóstico (só com ?diagnostico) */
+.panel { background:var(--panel-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 20px; }
+.panel h2 { margin-bottom:12px; font-size:15px; }
+dl { display:grid; grid-template-columns:max-content 1fr; gap:6px 18px; margin:0; }
+dt { color:var(--text-faint); } dd { margin:0; overflow-wrap:anywhere; }
+ul { color:var(--amber); font-size:12px; padding-left:18px; }
+
+/* Responsividade */
+@media (max-width:1024px) {
+  .cards { grid-template-columns:repeat(2, minmax(0,1fr)); }
+  .slot-grid { grid-template-columns:1fr; }
+  .filters-grid { grid-template-columns:repeat(2, minmax(0,1fr)); }
+}
+@media (max-width:600px) {
+  .page { padding:20px 16px 32px; }
+  .header { padding-bottom:18px; margin-bottom:18px; }
+  .header h1 { font-size:24px; }
+  .cards { gap:12px; margin-bottom:18px; }
+  .card { padding:14px 14px 16px; }
+  .card-value { font-size:32px; }
+  .slot { margin-bottom:18px; padding:14px 14px 16px; }
+  .slot-grid { margin-bottom:18px; }
+  .slot-body-md, .slot-body-lg { min-height:200px; }
+  .chart-box, .chart-empty { height:260px; }
+}
+@media (max-width:360px) {
+  .cards { grid-template-columns:1fr; }
+  .filters-grid { grid-template-columns:1fr; }
+}
+
+/* Impressão / PDF (Etapa 8, bloco 2) — área própria, oculta na tela; em @media print só ela aparece. */
+.print-area { display:none; }
+@media print {
+  @page { size: A4 landscape; margin: 12mm 10mm; }
+  html, body { background:#fff !important; color:#000 !important; font:10pt/1.35 Arial, Helvetica, sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  /* Esconde TUDO da tela (filtros, botões, gráficos, paginação, cards, modal...) e mostra só a área de impressão. */
+  .page, .det-overlay { display:none !important; }
+  .print-area { display:block !important; width:100%; }
+  .print-head { margin:0 0 6mm; padding-bottom:3mm; border-bottom:1.5pt solid #000; break-after:avoid; page-break-after:avoid; }
+  .print-head h1 { margin:0; font-size:18pt; line-height:1.2; color:#000; }
+  .print-sub { margin:1mm 0 0; font-size:10pt; color:#333; }
+  .print-count { margin:2mm 0 0; font-size:11pt; font-weight:700; color:#000; }
+  .print-filtros { margin:1mm 0 0; font-size:8.5pt; color:#333; }
+  .print-emitido { margin:1mm 0 0; font-size:8pt; color:#555; }
+  .print-vazio { margin:8mm 0; font-size:11pt; }
+  .print-tbl { width:100%; border-collapse:collapse; table-layout:auto; font-size:8.5pt; }
+  .print-tbl thead { display:table-header-group; }          /* cabeçalho repete em cada página */
+  .print-tbl tfoot { display:table-footer-group; }
+  .print-tbl th { padding:1.6mm 2mm; text-align:left; font-size:7.5pt; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#000; background:#e9e9e9 !important; border:.5pt solid #777; }
+  .print-tbl td { padding:1.4mm 2mm; vertical-align:top; color:#000; border:.5pt solid #bbb; overflow-wrap:anywhere; }
+  .print-tbl tr { break-inside:avoid; page-break-inside:avoid; }   /* não corta linha no meio */
+  .print-tbl tbody tr:nth-child(even) td { background:#f6f6f6 !important; }
+  .print-tbl .p-nowrap { white-space:nowrap; }
+  .print-tbl .p-nome { font-weight:700; }
+}

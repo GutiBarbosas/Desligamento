@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desligamentos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <!-- 1. CABEÇALHO -->
+  <header class="header">
+    <div class="header-text">
+      <h1>Desligamentos</h1>
+      <p class="subtitle">Visão geral dos colaboradores desligados</p>
+    </div>
+    <div class="source" id="statusChip" role="status" aria-live="polite">
+      <span class="source-dot" aria-hidden="true"></span>
+      <span class="source-text" id="statusText">Carregando dados…</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- 2. CARDS PRINCIPAIS (valores calculados a partir dos registros carregados) -->
+    <section class="cards" aria-label="Indicadores principais">
+      <article class="card card-total" id="cardTotal">
+        <h2 class="card-label">Total de desligamentos</h2>
+        <p class="card-value" data-valor>—</p>
+      </article>
+      <article class="card" id="cardTrabalhado">
+        <h2 class="card-label"><span class="dot dot-green" aria-hidden="true"></span>Trabalhado</h2>
+        <p class="card-value" data-valor>—</p>
+      </article>
+      <article class="card" id="cardIndenizado">
+        <h2 class="card-label"><span class="dot dot-amber" aria-hidden="true"></span>Indenizado</h2>
+        <p class="card-value" data-valor>—</p>
+      </article>
+      <article class="card" id="cardTermino">
+        <h2 class="card-label"><span class="dot dot-grey" aria-hidden="true"></span>Término de contrato</h2>
+        <p class="card-value" data-valor>—</p>
+      </article>
+    </section>
+
+    <!-- 3. ÁREA DE CONTEÚDO — filtros (Etapa 4), gráficos (Etapa 6) e tabela (Etapa 5) -->
+    <!-- FILTROS (Etapa 4). Listas de opções preenchidas por app.js a partir da base. -->
+    <section class="slot" id="areaFiltros" aria-label="Filtros">
+      <h2 class="slot-title">Filtros</h2>
+      <div class="filters-grid">
+        <div class="field"><label for="fInicio">Data inicial</label><input type="date" id="fInicio"></div>
+        <div class="field"><label for="fFim">Data final</label><input type="date" id="fFim"></div>
+        <div class="field"><label for="fLoja">Loja</label><select id="fLoja"></select></div>
+        <div class="field"><label for="fGerente">Gerente</label><select id="fGerente"></select></div>
+        <div class="field"><label for="fSupervisor">Supervisor</label><select id="fSupervisor"></select></div>
+        <div class="field"><label for="fFuncao">Função</label><select id="fFuncao"></select></div>
+        <div class="field"><label for="fAviso">Tipo de aviso</label><select id="fAviso"></select></div>
+        <div class="field"><label for="fBusca">Colaborador</label><input type="search" id="fBusca" placeholder="Buscar por nome" autocomplete="off"></div>
+      </div>
+      <div class="filters-foot">
+        <p class="result-count" id="contador" aria-live="polite">—</p>
+        <button type="button" class="btn-ghost" id="btnLimpar">Limpar filtros</button>
+      </div>
+      <p class="empty-msg" id="msgVazio" hidden></p>
+    </section>
+
+    <!-- GRÁFICOS (Etapa 6). Desenhados por graficos.js (Chart.js local) a partir de DESLIG_STATE.filtrados. -->
+    <section class="slot-grid" id="areaGraficos" aria-label="Gráficos">
+      <div class="slot" id="slotGrafico1">
+        <h2 class="slot-title">Desligamentos por mês</h2>
+        <div class="chart-box" id="graficoMesBox" hidden><canvas id="graficoMes" role="img" aria-label="Desligamentos por mês"></canvas></div>
+        <p class="chart-empty" id="graficoMesVazio"></p>
+      </div>
+      <div class="slot" id="slotGrafico2">
+        <h2 class="slot-title">Desligamentos por tempo de empresa</h2>
+        <div class="chart-box" id="graficoTempoBox" hidden><canvas id="graficoTempo" role="img" aria-label="Desligamentos por tempo de empresa"></canvas></div>
+        <p class="chart-empty" id="graficoTempoVazio"></p>
+      </div>
+    </section>
+
+    <section class="slot" id="areaTabela" aria-label="Tabela">
+      <h2 class="slot-title">Colaboradores desligados</h2>
+      <!-- TABELA (Etapa 5). Linhas, paginação e ordenação preenchidas por tabela.js a partir de DESLIG_STATE.filtrados. -->
+      <div class="table-wrap" id="tabelaWrap" hidden>
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th scope="col" data-col="colaborador" aria-sort="none"><button type="button" class="sort-btn" data-ordem="colaborador">Colaborador</button></th>
+              <th scope="col" data-col="data" aria-sort="descending"><button type="button" class="sort-btn" data-ordem="data">Data do desligamento</button></th>
+              <th scope="col" data-col="loja" aria-sort="none"><button type="button" class="sort-btn" data-ordem="loja">Loja</button></th>
+              <th scope="col">Gerente</th>
+              <th scope="col">Super</th>
+              <th scope="col" data-col="funcao" aria-sort="none"><button type="button" class="sort-btn" data-ordem="funcao">Função</button></th>
+              <th scope="col" data-col="tempo" aria-sort="none"><button type="button" class="sort-btn" data-ordem="tempo">Tempo de empresa</button></th>
+              <th scope="col">T. aviso prévio</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaCorpo"></tbody>
+        </table>
+      </div>
+      <p class="table-empty" id="tabelaVazio" hidden>Nenhum desligamento encontrado para os filtros selecionados.</p>
+      <div class="table-foot" id="tabelaRodape" hidden>
+        <p class="result-count" id="tabelaInfo" aria-live="polite"></p>
+        <nav class="pager" id="paginacao" aria-label="Paginação da tabela"></nav>
+      </div>
+    </section>
+
+    <!-- Diagnóstico da Etapa 2 preservado: aparece só com ?diagnostico na URL -->
+    <section class="panel" id="diagnosticoPanel" hidden>
+      <h2>Diagnóstico da carga de dados</h2>
+      <div id="diagnostico">—</div>
+    </section>
+  </main>
+</div>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="filtros.js"></script>
+<script src="tabela.js"></script>
+<script src="chart.umd.min.js"></script>
+<script src="graficos.js"></script>
+<script src="exportacao.js"></script>
+<script src="impressao.js"></script>
+<script src="detalhes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
