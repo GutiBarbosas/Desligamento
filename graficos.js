@@ -60,19 +60,36 @@
     const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
     const graficos = {};                                     // { mes: Chart, tempo: Chart }
 
-    // Escreve o valor de cada barra (sem plugin externo); barras com 0 ficam sem rótulo.
+    // Escreve o valor de cada barra (sem plugin externo) + a porcentagem sobre o total do gráfico
+    // (soma das barras = desligamentos filtrados); barras com 0 ficam sem rótulo.
+    const pct = (v, total) => total ? (v / total * 100).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%' : '0,0%';
     const rotulosValor = {
       id: 'rotulosValor',
       afterDatasetsDraw(chart) {
         const { ctx } = chart, horiz = chart.options.indexAxis === 'y';
+        const dados = chart.data.datasets[0].data, total = dados.reduce((a, b) => a + b, 0);
+        const fonte = getComputedStyle(document.body).fontFamily;
         ctx.save();
         ctx.fillStyle = cssVar('--text-dim');
-        ctx.font = `600 12px ${getComputedStyle(document.body).fontFamily}`;
         ctx.textAlign = horiz ? 'left' : 'center';
         ctx.textBaseline = horiz ? 'middle' : 'bottom';
         chart.getDatasetMeta(0).data.forEach((barra, i) => {
-          const v = chart.data.datasets[0].data[i];
-          if (v) ctx.fillText(v.toLocaleString('pt-BR'), horiz ? barra.x + 6 : barra.x, horiz ? barra.y : barra.y - 4);
+          const v = dados[i];
+          if (!v) return;
+          const p = pct(v, total);
+          if (horiz) {
+            ctx.font = `600 12px ${fonte}`;
+            const t1 = v.toLocaleString('pt-BR');
+            ctx.fillText(t1, barra.x + 6, barra.y);
+            const w = ctx.measureText(t1 + ' ').width;
+            ctx.font = `400 11px ${fonte}`;
+            ctx.fillText(`(${p})`, barra.x + 6 + w, barra.y);
+          } else {                                           // barras verticais são estreitas: número em cima, % logo acima
+            ctx.font = `600 12px ${fonte}`;
+            ctx.fillText(v.toLocaleString('pt-BR'), barra.x, barra.y - 4);
+            ctx.font = `400 10px ${fonte}`;
+            ctx.fillText(p, barra.x, barra.y - 18);
+          }
         });
         ctx.restore();
       }
@@ -81,7 +98,7 @@
     function opcoes(horizontal, tituloTooltip) {
       const dim = cssVar('--text-dim'), grade = cssVar('--border-soft');
       const eixoCat = { grid: { display: false }, border: { color: cssVar('--border') }, ticks: { color: dim, font: { size: 12 } } };
-      const eixoVal = { beginAtZero: true, grace: '12%', border: { display: false }, grid: { color: grade }, ticks: { color: dim, precision: 0, font: { size: 12 } } };
+      const eixoVal = { beginAtZero: true, grace: horizontal ? '24%' : '18%', border: { display: false }, grid: { color: grade }, ticks: { color: dim, precision: 0, font: { size: 12 } } };
       return {
         indexAxis: horizontal ? 'y' : 'x',
         responsive: true, maintainAspectRatio: false, animation: false,
@@ -93,7 +110,7 @@
             titleColor: cssVar('--text'), bodyColor: dim, padding: 10, displayColors: false,
             callbacks: {
               title: itens => tituloTooltip(itens[0].dataIndex),
-              label: it => `${it.parsed[horizontal ? 'x' : 'y'].toLocaleString('pt-BR')} ${it.parsed[horizontal ? 'x' : 'y'] === 1 ? 'desligamento' : 'desligamentos'}`
+              label: it => { const v = it.parsed[horizontal ? 'x' : 'y']; return `${v.toLocaleString('pt-BR')} ${v === 1 ? 'desligamento' : 'desligamentos'} (${pct(v, it.dataset.data.reduce((a, b) => a + b, 0))})`; }
             }
           }
         }
